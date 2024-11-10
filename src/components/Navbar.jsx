@@ -1,8 +1,20 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useParams, useNavigate } from 'react-router-dom';
+
 
 function Navbar() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout(); // Call logout function
+      navigate('/');  // Redirect to the home page after logout
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
 
   return (
     <nav className="bg-white shadow-md">
@@ -23,9 +35,10 @@ function Navbar() {
                   Dashboard
                 </Link>
                 <button
-                  onClick={logout}
-                  className="text-gray-700 hover:text-blue-600"
+                  onClick={handleLogout}
+                  className="text-gray-700 hover:text-blue-600" 
                 >
+                
                   Logout
                 </button>
               </>

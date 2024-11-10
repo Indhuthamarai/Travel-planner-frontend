@@ -518,6 +518,12 @@ function StateDestinations() {
           ))}
         </div>
       )}
+      <button
+            className="mt-4 text-blue-600 hover:text-blue-800"
+            onClick={() => window.history.back()}
+          >
+            Back to Destinations
+          </button>
     </div>
   );
 }

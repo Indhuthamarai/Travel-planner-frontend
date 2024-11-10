@@ -263,8 +263,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext'; // Import authentication context
+import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
+
+const API_KEY = 'fceef314925ca55ebbc4407afc8d3717'; // Replace with your actual weather API key
 
 // StarRating Component to display stars based on decimal rating
 const StarRating = ({ rating }) => {
@@ -289,13 +291,15 @@ const StarRating = ({ rating }) => {
 function PlaceDetails() {
   const { state, name } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();  // Retrieve user from context to check login status
+  const { user } = useAuth();
   const [destination, setDestination] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [weather, setWeather] = useState(null); // State for weather data
 
   useEffect(() => {
     fetchDestination(state, name);
+    fetchWeather(name); // Fetch weather when component mounts
   }, [state, name]);
 
   const fetchDestination = async (state, name) => {
@@ -311,14 +315,49 @@ function PlaceDetails() {
     }
   };
 
+  // const fetchWeather = async (name) => {
+  //   try {
+  //     const weatherResponse = await axios.get(`https://api.openweathermap.org/data/2.5/weather`, {
+  //       params: {
+  //         q: name,
+  //         units: 'metric', // Use metric units (Celsius)
+  //         appid: API_KEY,
+  //       },
+  //     });
+  //     console.log('Weather data:', weatherResponse.data);
+  //     setWeather(weatherResponse.data);
+  //   } catch (error) {
+  //     console.error('Error fetching weather:', error);
+  //     setWeather(null); // Set weather to null if fetching fails
+  //     toast.error('Unable to retrieve weather data. Please check the API key or try again later.');
+  //   }
+  // };
+
+  const fetchWeather = async (name) => {
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${name}&units=metric&appid=${API_KEY}`;
+    try {
+      const weatherResponse = await fetch(url);
+      const weatherData = await weatherResponse.json();
+      // console.log('Weather Response:', weatherData);
+
+      if (weatherData.cod === 200) {
+        setWeather(weatherData); // Set weather data if request is successful
+      } else {
+        console.error('Error fetching weather:', weatherData);
+        toast.error('Unable to retrieve weather data.');
+      }
+    } catch (error) {
+      console.error('Error fetching weather:', error);
+      toast.error('Unable to retrieve weather data. Please try again later.');
+    }
+  };
+
   const handleBookNowClick = (name) => {
-    // console.log(name);
     if (!user) {
-      toast.error("Please log in to book a trip");  // Show a message prompting login
-      navigate('/login');  // Redirect to login page
+      toast.error("Please log in to book a trip");
+      navigate('/login');
       return;
     }
-    // navigate(`/book/${destination._id}`); // Redirect to booking page if user is logged in
     navigate(`/book/${name}`);
   };
 
@@ -331,23 +370,44 @@ function PlaceDetails() {
         <>
           <h1 className="text-3xl font-bold mb-4">Details for {destination.name}</h1>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <div className="space-y-6">
+              {/* Destination Info Section */}
+              <div className="bg-white rounded-lg shadow-md p-5 mb-7">
                 <h2 className="text-xl font-semibold mb-2">{destination.name}</h2>
                 <img
                   src={destination.images?.[0] || 'placeholder.jpg'}
                   alt={destination.name}
                   className="w-full h-48 object-cover rounded-t-md mb-4"
                 />
-                <p className="text-gray-700">{destination.description}</p>
-                <button
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mt-2"
-                  onClick={() => handleBookNowClick(destination.name)} // Pass destination._id explicitly
-                >
-                  Book Now
-                </button>
+                <p className="text-gray-700 mb-4">{destination.description}</p>
+                
+                <div className="flex justify-between items-center">
+                  {/* Book Now Button */}
+                  <button
+                    className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
+                    onClick={() => handleBookNowClick(destination.name)}
+                  >
+                    Book Now
+                  </button>
+
+                  {/* Google Maps Link */}
+                  <a
+                    href={destination.googleMapLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center space-x-2 text-blue-600 hover:text-blue-800"
+                  >
+                    <img
+                      src="https://cdn.pixabay.com/photo/2014/04/03/10/03/google-309740_640.png"
+                      alt="Google Maps Logo"
+                      className="h-6 w-6"
+                    />
+                    <span className="text-lg">View on Google Maps</span>
+                  </a>
+                </div>
               </div>
 
+              {/* Attractions Section */}
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-xl font-semibold mb-4">Popular Attractions</h2>
                 <div className="space-y-4">
@@ -358,25 +418,13 @@ function PlaceDetails() {
                       <p className="text-sm text-gray-500">Best time to visit: {attraction.bestTimeToVisit}</p>
                       <StarRating rating={attraction.rating} />
                       <p className="text-sm text-gray-500">Price: {attraction.priceRange}</p>
-                      <a
-                        href={attraction.googleMapLink}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center space-x-2"
-                      >
-                        <img
-                          src="https://cdn.pixabay.com/photo/2014/04/03/10/03/google-309740_640.png"
-                          alt="Google Maps Logo"
-                          className="h-6 w-6"
-                        />
-                        <span className="text-blue-600 hover:underline">View in Map</span>
-                      </a>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
 
+            {/* Hotels Section */}
             <div>
               <div className="bg-white rounded-lg shadow-md p-6 mb-6">
                 <h2 className="text-xl font-semibold mb-4">Famous Hotels</h2>
@@ -391,9 +439,28 @@ function PlaceDetails() {
                   ))}
                 </div>
               </div>
+              {/* Weather Section (Below Famous Hotels) */}
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 className="text-xl font-semibold mb-4">Current Weather</h2>
+            {weather ? (
+              <div className="space-y-2">
+                <p>Temperature: {weather.main?.temp ? `${weather.main.temp}°C` : 'N/A'}</p>
+                <p>Condition: {weather.weather?.[0]?.description || 'N/A'}</p>
+                <p>Humidity: {weather.main?.humidity || 'N/A'}%</p>
+                <p>Wind Speed: {weather.wind?.speed || 'N/A'} m/s</p>
+                <p>Cloud Coverage: {weather.clouds?.all ? `${weather.clouds.all}%` : 'N/A'}</p>
+              </div>
+            ) : (
+              <p>Weather data not available.</p>
+            )}
+          </div>
             </div>
+            
           </div>
 
+          
+
+          {/* Back Button */}
           <button
             className="mt-4 text-blue-600 hover:text-blue-800"
             onClick={() => window.history.back()}
