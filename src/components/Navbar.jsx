@@ -1,21 +1,18 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useParams, useNavigate } from 'react-router-dom';
-
-
 function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      await logout(); // Call logout function
-      navigate('/');  // Redirect to the home page after logout
+      await logout(); 
+      navigate('/');  
     } catch (error) {
       console.error('Error logging out:', error);
     }
   };
-
   return (
     <nav className="bg-white shadow-md">
       <div className="container mx-auto px-4">
@@ -34,12 +31,20 @@ function Navbar() {
                 <Link to="/dashboard" className="text-gray-700 hover:text-blue-600">
                   Dashboard
                 </Link>
+                <Link
+              to="/About"
+              className="text-gray-700 hover:text-blue-600"
+            >About Us
+            </Link>
+            <Link
+              to="/Contact"
+              className="text-gray-700 hover:text-blue-600"
+            >Contact Us
+            </Link>
                 <button
                   onClick={handleLogout}
                   className="text-gray-700 hover:text-blue-600" 
-                >
-                
-                  Logout
+                >Logout
                 </button>
               </>
             ) : (
@@ -49,11 +54,20 @@ function Navbar() {
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-                >
-                  Sign Up
+                  className="text-gray-700 hover:text-blue-600"
+                >Sign Up
                 </Link>
-              </>
+              <Link
+              to="/About"
+              className="text-gray-700 hover:text-blue-600"
+            >About Us
+            </Link>
+            <Link
+              to="/Contact"
+              className="text-gray-700 hover:text-blue-600"
+            >Contact Us
+            </Link>
+            </>
             )}
           </div>
         </div>

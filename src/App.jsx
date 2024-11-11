@@ -6,12 +6,12 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Destinations from './pages/Destinations';
-// import StateDetails from './pages/StateDetails';
 import BookTrip from './pages/BookTrip';
 import { AuthProvider } from './context/AuthContext';
-import StateDestination from './pages/stateDestinations';
 import PlaceDetails from "./pages/PlaceDetails"; 
 import StateDestinations from './pages/stateDestinations';
+import AboutUs from './pages/About';
+import ContactUs from './pages/ContactUS';
 
 function App() {
   return (
@@ -22,6 +22,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/About" element={<AboutUs />} />
+            <Route path="/Contact" element={<ContactUs />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/destinations" element={<Destinations />} />
