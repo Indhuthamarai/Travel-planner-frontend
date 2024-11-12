@@ -63,10 +63,10 @@ function BookTrip() {
   const calculatePrice = () => {
     const days = Math.ceil((formData.endDate - formData.startDate) / (1000 * 60 * 60 * 24));
     const basePrice = 1500;
-    const transportCost = formData.transportMode === 'train' ? 1200 : 800;
+    // const transportCost = formData.transportMode === 'train' ? 1200 : 800;
     const discount = days > 7 ? 0.9 : 1; 
 
-    return Math.round((basePrice * days * (formData.adults + formData.children * 0.5) + transportCost) * discount);
+    return Math.round((basePrice * days * (formData.adults + formData.children * 0.5)) * discount);
   };
  return (
     <div className="container mx-auto px-4 py-8">
@@ -139,7 +139,7 @@ function BookTrip() {
             />
           </div>
 
-          {/* Transport Mode */}
+          {/* Transport Mode
           <div>
             <label htmlFor="transportMode" className="block text-sm font-medium text-gray-700">Transport Mode</label>
             <select
@@ -152,7 +152,7 @@ function BookTrip() {
               <option value="train">Train</option>
               <option value="plane">Plane</option>
             </select>
-          </div>
+          </div> */}
 
           {/* Estimated Price */}
           {formData.startDate && formData.endDate && (

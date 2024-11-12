@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaStar, FaStarHalfAlt, FaRegStar } from 'react-icons/fa';
@@ -54,24 +53,6 @@ function PlaceDetails() {
       setLoading(false);
     }
   };
-
-  // const fetchWeather = async (name) => {
-  //   try {
-  //     const weatherResponse = await axios.get(`https://api.openweathermap.org/data/2.5/weather`, {
-  //       params: {
-  //         q: name,
-  //         units: 'metric', // Use metric units (Celsius)
-  //         appid: API_KEY,
-  //       },
-  //     });
-  //     console.log('Weather data:', weatherResponse.data);
-  //     setWeather(weatherResponse.data);
-  //   } catch (error) {
-  //     console.error('Error fetching weather:', error);
-  //     setWeather(null); // Set weather to null if fetching fails
-  //     toast.error('Unable to retrieve weather data. Please check the API key or try again later.');
-  //   }
-  // };
 
   const fetchWeather = async (name) => {
     const url = `https://api.openweathermap.org/data/2.5/weather?q=${name}&units=metric&appid=${API_KEY}`;
